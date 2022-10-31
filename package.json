@@ -55,7 +55,7 @@
   },
   "name": "@glider-xyz/relay-server",
   "description": "This is the backend for Glider Relayer.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "dist/tsc/src/main.js",
   "directories": {
     "test": "test"
