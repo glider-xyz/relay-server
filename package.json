@@ -53,7 +53,7 @@
       "npx eslint --fix"
     ]
   },
-  "name": "relay-server",
+  "name": "@glider-xyz/relay-server",
   "description": "This is the backend for Glider Relayer.",
   "version": "1.0.0",
   "main": "dist/tsc/src/main.js",
@@ -70,5 +70,14 @@
   "bugs": {
     "url": "https://github.com/glider-xyz/relay-server/issues"
   },
-  "homepage": "https://github.com/glider-xyz/relay-server#readme"
+  "homepage": "https://github.com/glider-xyz/relay-server#readme",
+  "keywords": [
+    "meta",
+    "transactions",
+    "eip2771",
+    "ethereum",
+    "eth",
+    "solidity",
+    "metatransactions"
+  ]
 }
