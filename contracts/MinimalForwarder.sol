@@ -17,7 +17,7 @@ import '@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol';
  * such as the GSN which do have the goal of building a system like that.
  */
 
-contract Forwarder is EIP712 {
+contract MinimalForwarder is EIP712 {
     using ECDSA for bytes32;
 
     struct ForwardRequest {
