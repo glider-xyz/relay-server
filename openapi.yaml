@@ -47,9 +47,6 @@
               schema:
                 type: "object"
                 properties:
-                  dappId:
-                    type: "string"
-                    description: "Internal Glider dapp id"
                   forwardRequest:
                     type: "object"
                     properties:
@@ -67,7 +64,6 @@
                     description: "The signature for the transaction. Should be returned by the user's wallet."
               example:
                 walletAddress: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
-                dappId: "your-glider-dapp-id"
                 forwardRequest:
                   to: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
                   value: "0x10000000000"
