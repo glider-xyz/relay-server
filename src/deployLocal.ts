@@ -1,6 +1,8 @@
 import * as ethers from 'ethers';
 import { entropyToMnemonic } from '@ethersproject/hdnode';
 import { abi as ForwarderABI, bytecode as ForwarderBytecode } from 'src/contractArtifacts/ForwarderArtifact.json';
+// We deploy to a deterministic address by using your main account to fund a
+// private address that will deterministically exist.
 export const deployForwarderLocal = async (port: number = 8545) => {
   const provider = new ethers.providers.JsonRpcProvider(`http://localhost:${port}`);
   const signer = provider.getSigner();

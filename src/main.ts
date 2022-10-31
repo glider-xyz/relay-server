@@ -17,13 +17,9 @@ type GliderConfig = {
   networks?: Array<{rpcUrl: string, accountPrivateKeys: Array<string>, forwarderAddress?: string}>;
 }
 
-// We deploy to a deterministic address by using your main account to fund a
-// private address that will deterministically exist.
-
 const main = async () => {
-  const argv = parseArgs(process.argv.slice(2), { 'string': ['port', 'config'] });
+  const argv = parseArgs(process.argv.slice(2));
 
-  const configPath = argv['config'];
   let gliderConfig: GliderConfig = {};
 
   if (process.argv[2] === 'deploy_local') {
@@ -33,15 +29,17 @@ const main = async () => {
     initConfig();
     return;
   } else if (process.argv[2] !== 'start') {
-    console.log('Usage: npx glider start [--config=<config_file.json>], npx glider deploy_local --port=<port>, or npx glider init_config');
-    process.exit();
-  }
-  if (!configPath) {
-    console.log('must specify config using --config=<config_file.json>. See documentation for how to format config file.');
+    console.log('Usage: npx glider start, npx glider deploy_local --port=<port>, or npx glider init_config');
     process.exit();
   }
 
-  gliderConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  // Ensure that glider.json file exists
+  if (!fs.existsSync('glider.json')) {
+    console.log('glider.json file not found. Run npx glider init_config to create it.');
+    process.exit();
+  }
+
+  gliderConfig = JSON.parse(fs.readFileSync('glider.json', 'utf8'));
   if (gliderConfig.port == null) {
     gliderConfig.port = 3001;
   }

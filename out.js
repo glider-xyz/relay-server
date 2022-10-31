@@ -111,7 +111,7 @@ var require_package = __commonJS({
 // node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
   "node_modules/dotenv/lib/main.js"(exports2, module2) {
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var path = require("path");
     var os = require("os");
     var packageJson = require_package();
@@ -156,7 +156,7 @@ var require_main = __commonJS({
         }
       }
       try {
-        const parsed = DotenvModule.parse(fs2.readFileSync(dotenvPath, { encoding }));
+        const parsed = DotenvModule.parse(fs3.readFileSync(dotenvPath, { encoding }));
         Object.keys(parsed).forEach(function(key) {
           if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
             process.env[key] = parsed[key];
@@ -50645,7 +50645,7 @@ var require_constants = __commonJS({
 // node_modules/node-gyp-build/index.js
 var require_node_gyp_build = __commonJS({
   "node_modules/node-gyp-build/index.js"(exports2, module2) {
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var path = require("path");
     var os = require("os");
     var runtimeRequire = typeof __webpack_require__ === "function" ? __non_webpack_require__ : require;
@@ -50712,7 +50712,7 @@ var require_node_gyp_build = __commonJS({
     };
     function readdirSync(dir) {
       try {
-        return fs2.readdirSync(dir);
+        return fs3.readdirSync(dir);
       } catch (err) {
         return [];
       }
@@ -50821,7 +50821,7 @@ var require_node_gyp_build = __commonJS({
       return typeof window !== "undefined" && window.process && window.process.type === "renderer";
     }
     function isAlpine(platform2) {
-      return platform2 === "linux" && fs2.existsSync("/etc/alpine-release");
+      return platform2 === "linux" && fs3.existsSync("/etc/alpine-release");
     }
     load.parseTags = parseTags;
     load.matchTags = matchTags;
@@ -60359,13 +60359,11 @@ var relayerSend = (ctx) => __async(void 0, null, function* () {
   if (!signature) {
     ctx.status = 400;
     ctx.message = "Missing signature.";
-    console.debug("no signature");
     return;
   }
   if (!chainId) {
     ctx.status = 400;
     ctx.message = "Missing chain id.";
-    console.debug("no chainid");
     return;
   }
   if (!forwardRequest) {
@@ -60384,7 +60382,6 @@ var relayerSend = (ctx) => __async(void 0, null, function* () {
   if (txn == null) {
     ctx.status = 400;
     ctx.message = "Invalid signature";
-    console.debug("bad signature");
     return;
   }
   if (!chainIdToMetadata(chainId).isLocalChain) {
@@ -60427,7 +60424,7 @@ var relayerSend = (ctx) => __async(void 0, null, function* () {
 
 // src/main.ts
 var import_minimist = __toESM(require_minimist());
-var import_fs = __toESM(require("fs"));
+var import_fs2 = __toESM(require("fs"));
 
 // src/relayer/Relayer.ts
 var import_ethers = __toESM(require_lib35());
@@ -60535,11 +60532,10 @@ var RelayerRouter = class {
   }
 };
 
-// src/main.ts
+// src/deployLocal.ts
 var ethers5 = __toESM(require_lib35());
 var import_hdnode = __toESM(require_lib26());
-dotenv.config();
-var deployForwarderLocal = (port = 8545) => __async(exports, null, function* () {
+var deployForwarderLocal = (port = 8545) => __async(void 0, null, function* () {
   const provider = new ethers5.providers.JsonRpcProvider(`http://localhost:${port}`);
   const signer = provider.getSigner();
   let forwarderDeployerWallet = ethers5.Wallet.fromMnemonic((0, import_hdnode.entropyToMnemonic)("0x" + Buffer.from("forwarder do_not_use").toString("hex"))).connect(provider);
@@ -60557,37 +60553,45 @@ var deployForwarderLocal = (port = 8545) => __async(exports, null, function* () 
   yield forwarder.deployed();
   console.log(`Forwarder deployed to ${forwarder.address}`);
 });
+
+// src/initConfig.ts
+var import_fs = __toESM(require("fs"));
+var initConfig = () => {
+  if (import_fs.default.existsSync(".glider.json")) {
+    console.log("Config file already exists. Aborting.");
+    return;
+  }
+  import_fs.default.writeFileSync(".glider.json", JSON.stringify({
+    port: 3001,
+    networks: [
+      {
+        rpcUrl: "http://localhost:8545",
+        accountPrivateKeys: ["0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"]
+      }
+    ]
+  }, null, 2));
+};
+
+// src/main.ts
+dotenv.config();
 var main = () => __async(exports, null, function* () {
-  const argv = (0, import_minimist.default)(process.argv.slice(2), { "string": ["port", "config"] });
-  const configPath = argv["config"];
+  const argv = (0, import_minimist.default)(process.argv.slice(2));
   let gliderConfig = {};
   if (process.argv[2] === "deploy_local") {
     yield deployForwarderLocal(argv["port"]);
     return;
   } else if (process.argv[2] === "init_config") {
-    if (import_fs.default.existsSync(".glider.json")) {
-      console.log("Config file already exists. Aborting.");
-      return;
-    }
-    import_fs.default.writeFileSync(".glider.json", JSON.stringify({
-      port: 3001,
-      networks: [
-        {
-          rpcUrl: "http://localhost:8545",
-          accountPrivateKeys: ["0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"]
-        }
-      ]
-    }, null, 2));
+    initConfig();
     return;
   } else if (process.argv[2] !== "start") {
-    console.log("Usage: npx glider start [--config=<config_file.json>], npx glider deploy_local --port=<port>, or npx glider init_config");
+    console.log("Usage: npx glider start, npx glider deploy_local --port=<port>, or npx glider init_config");
     process.exit();
   }
-  if (!configPath) {
-    console.log("must specify config using --config=<config_file.json>. See documentation for how to format config file.");
+  if (!import_fs2.default.existsSync("glider.json")) {
+    console.log("glider.json file not found. Run npx glider init_config to create it.");
     process.exit();
   }
-  gliderConfig = JSON.parse(import_fs.default.readFileSync(configPath, "utf8"));
+  gliderConfig = JSON.parse(import_fs2.default.readFileSync("glider.json", "utf8"));
   if (gliderConfig.port == null) {
     gliderConfig.port = 3001;
   }
