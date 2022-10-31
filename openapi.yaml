@@ -1,0 +1,114 @@
+---
+  openapi: "3.0.0"
+  info:
+    version: "0.0"
+    title: "Glider REST API"
+    description: "All the endpoints for the Glider API."
+  servers:
+    -
+      url: "{scheme}://api.useglider.xyz/{basePath}"
+      variables:
+        scheme:
+          enum:
+            - "https"
+            - "http"
+          default: "https"
+        basePath:
+          default: ""
+  components:
+    schemas:
+      ErrorModel:
+        type: "object"
+        properties:
+          code:
+            type: "string"
+    securitySchemes:
+      JWT:
+        description: "You can create a JSON Web Token (JWT) during auth.\nUsage format: `Bearer <JWT>`\n"
+        name: "Authorization"
+        type: "apiKey"
+        in: "header"
+  paths:
+    /relayer/send:
+      post:
+        security: []
+        summary: "Send transaction via relayer"
+        description: "Sends transaction with signature to Glider relayer, which will execute the transaction on the user's behalf."
+        parameters:
+          - in: header
+            name: X-Api-Key
+            required: true
+            schema:
+              type: string
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  dappId:
+                    type: "string"
+                    description: "Internal Glider dapp id"
+                  forwardRequest:
+                    type: "object"
+                    properties:
+                      to:
+                        type: "string"
+                        description: "Address the transaction is being sent to. See https://ethereum.org/en/developers/docs/transactions/#whats-a-transaction"
+                      value:
+                        type: "string"
+                        description: "Amount being sent. See https://ethereum.org/en/developers/docs/transactions/#whats-a-transaction"
+                      data:
+                        type: "string"
+                        description: "Data being sent. See https://ethereum.org/en/developers/docs/transactions/#the-data-field"
+                  signature:
+                    type: "string"
+                    description: "The signature for the transaction. Should be returned by the user's wallet."
+              example:
+                walletAddress: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+                dappId: "your-glider-dapp-id"
+                forwardRequest:
+                  to: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+                  value: "0x10000000000"
+                  data: "0xfa558b710000000000000000000000001f9840a85d5af5bf1d1762f925bdaddc4201f984000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a0590312ba1d5d0c890058f5a600cb4aeca335fa0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000082f025a3f56e90b000"
+                signature: "0x21fbf0696d5e0aa2ef41a2b4ffb623bcaf070461d61cf7251c74161f82fec3a4370854bc0a34b3ab487c1bc021cd318c734c51ae29374f2beb0e6f2dd49b4bf41c"
+        responses:
+          200:
+            description: "OK"
+            content:
+              application/json:
+                schema:
+                  type: "object"
+                  properties:
+                    hash:
+                      type: "string"
+                    from:
+                      type: "string"
+                    confirmations:
+                      type: "integer"
+                    nonce:
+                      type: "integer"
+                    gasLimit:
+                      type: "string"
+                    data:
+                      type: "string"
+                    value:
+                      type: "string"
+                    chainId:
+                      type: "integer"
+                example:
+                  hash: "0x6d85d05d302b7a2425bdfe9056fab64253c70c238cbb3223c2e9eee6cc809b1e"
+                  from: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+                  confirmations: 0
+                  nonce: 5
+                  gasLimit: "1000000"
+                  data: "0xfa558b710000000000000000000000001f9840a85d5af5bf1d1762f925bdaddc4201f984000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a0590312ba1d5d0c890058f5a600cb4aeca335fa0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000082f025a3f56e90b000"
+                  value: "0x10000000000"
+                  chainId: 1
+          default:
+            description: "Unexpected error"
+            content:
+              application/json:
+                example:
+                  message: "Sorry unable to perform operation."
