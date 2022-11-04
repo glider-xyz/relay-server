@@ -72,7 +72,7 @@ const main = async () => {
   app.use(router.routes());
 
   const port = gliderConfig.port;
-  app.listen();
+  app.listen(port, '0.0.0.0');
 
   console.log(`Running on port ${port}`);
 };
